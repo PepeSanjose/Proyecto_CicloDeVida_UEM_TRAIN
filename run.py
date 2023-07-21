@@ -24,7 +24,7 @@ def root():
        dict.  Mensaje de salida
     """
     # No hacemos nada. Solo devolvemos info (customizable a voluntad)
-    return {"Proyecto": "Mod. 4 - Ciclo de vida de modelos IA"}
+    return {"Proyecto": "Pantalla de inicio"}
 
 
 # ruta para el lanzar el pipeline de entranamiento (Método GET)
@@ -43,7 +43,7 @@ def train_model_route():
     train_model.training_pipeline(df_path)
 
     # Se puede devolver lo que queramos (mensaje de éxito en el entrenamiento, métricas, etc.)
-    return {"TRAINING MODEL": "Mod. 4 - Ciclo de vida de modelos IA"}
+    return {"TRAINING MODEL": "El proyecto se ha entrenado correctamente"}
 
 
 # ruta para el lanzar el pipeline de inferencia (Método POST)
