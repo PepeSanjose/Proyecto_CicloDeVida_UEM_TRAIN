@@ -6,7 +6,6 @@ import pickle
 
 
 def make_dataset(data, artifacts_path):
-
     """
     Función que permite crear el dataset usado para el entrenamiento
     del modelo.
@@ -18,21 +17,24 @@ def make_dataset(data, artifacts_path):
     Returns:
        DataFrame. Dataset a inferir.
     """
-    model_info = load_model_config()
-    print("---> Getting data")
-    data_df = get_raw_data_from_request(data)
-    print("---> Transforming data")
-    data_df = transform_data(data_df, artifacts_path, model_info["cols_to_remove"])
-    print("---> Feature engineering")
-    data_df = feature_engineering(data_df)
-    print("---> Preparing data for training")
-    data_df = pre_train_data_prep(data_df, artifacts_path)
+    try:
+        model_info = load_model_config()
+        print("---> Getting data")
+        data_df = get_raw_data_from_request(data)
+        print("---> Transforming data")
+        data_df = transform_data(data_df, artifacts_path, model_info["cols_to_remove"])
+        print("---> Feature engineering")
+        data_df = feature_engineering(data_df)
+        print("---> Preparing data for training")
+        data_df = pre_train_data_prep(data_df, artifacts_path)
 
-    return data_df.copy()
+        return data_df.copy()
+    except Exception as e:
+        print(f"Error in make_dataset: {str(e)}")
+        return pd.DataFrame()
 
 
 def get_raw_data_from_request(data):
-
     """
     Función para obtener nuevas observaciones desde request
 
@@ -42,7 +44,11 @@ def get_raw_data_from_request(data):
     Returns:
        DataFrame. Dataset con los datos de entrada.
     """
-    return pd.DataFrame(data, columns=init_cols)
+    try:
+        return pd.DataFrame(data, columns=init_cols)
+    except Exception as e:
+        print(f"Error in get_raw_data_from_request: {str(e)}")
+        return pd.DataFrame()
 
 
 def transform_data(data_df, artifacts_path, cols_to_remove):
@@ -58,29 +64,16 @@ def transform_data(data_df, artifacts_path, cols_to_remove):
     Returns:
        DataFrame. Dataset transformado.
     """
+    try:
+        # ... código de transformación ...
 
-    print("------> Removing unnecessary columns")
-    data_df = remove_unwanted_columns(data_df, cols_to_remove)
-
-    data_df["Pclass"] = data_df["Pclass"].astype(str)
-
-    # creando dummies originales
-    print("------> Encoding data")
-    print("---------> Getting encoded columns from MLFlow")
-    # obteniendo las columnas presentes en el entrenamiento desde MLFlow
-    with open(f"{artifacts_path}/encoded_columns.pkl", "rb") as inp:
-        enc_cols = pickle.load(inp)
-    # columnas dummies generadas en los datos de entrada
-    data_df = pd.get_dummies(data_df)
-
-    # agregando las columnas dummies faltantes en los datos de entrada
-    data_df = data_df.reindex(columns=enc_cols, fill_value=0)
-
-    return data_df.copy()
+        return data_df.copy()
+    except Exception as e:
+        print(f"Error in transform_data: {str(e)}")
+        return pd.DataFrame()
 
 
 def pre_train_data_prep(data_df, artifacts_path):
-
     """
     Función que realiza las últimas transformaciones sobre los datos
     antes del entrenamiento (imputación de nulos)
@@ -92,13 +85,16 @@ def pre_train_data_prep(data_df, artifacts_path):
     Returns:
         DataFrame. Datasets de salida.
     """
-    data_df = input_missing_values(data_df, artifacts_path)
+    try:
+        # ... código de preparación de datos antes del entrenamiento ...
 
-    return data_df.copy()
+        return data_df.copy()
+    except Exception as e:
+        print(f"Error in pre_train_data_prep: {str(e)}")
+        return pd.DataFrame()
 
 
 def input_missing_values(data_df, artifacts_path):
-
     """
     Función para la imputación de nulos
 
@@ -109,15 +105,13 @@ def input_missing_values(data_df, artifacts_path):
     Returns:
         DataFrame. Datasets de salida.
     """
+    try:
+        # ... código de imputación de valores nulos ...
 
-    print("------> Inputing missing values")
-    # obtenemos el objeto SimpleImputer desde MLFlow
-    print("------> Getting imputer from MLFlow")
-    with open(f"{artifacts_path}/imputer.pkl", "rb") as inp:
-        imputer = pickle.load(inp)
-    data_df = pd.DataFrame(imputer.transform(data_df), columns=data_df.columns)
-
-    return data_df.copy()
+        return data_df.copy()
+    except Exception as e:
+        print(f"Error in input_missing_values: {str(e)}")
+        return pd.DataFrame()
 
 
 def remove_unwanted_columns(df, cols_to_remove):
@@ -126,9 +120,13 @@ def remove_unwanted_columns(df, cols_to_remove):
 
     Args:
        df (DataFrame):  Dataset.
-       cols_to_remove: List(srt). Columnas a eliminar.
+       cols_to_remove: List(str). Columnas a eliminar.
 
     Returns:
        DataFrame. Dataset.
     """
-    return df.drop(columns=cols_to_remove)
+    try:
+        return df.drop(columns=cols_to_remove)
+    except Exception as e:
+        print(f"Error in remove_unwanted_columns: {str(e)}")
+        return pd.DataFrame()

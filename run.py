@@ -27,7 +27,7 @@ def root():
     return {"Proyecto": "Pantalla de inicio"}
 
 
-# ruta para el lanzar el pipeline de entranamiento (Método GET)
+# ruta para el lanzar el pipeline de entrenamiento (Método GET)
 @app.route("/train-model", methods=["GET"])
 def train_model_route():
     """
@@ -36,14 +36,18 @@ def train_model_route():
     Returns:
        dict.  Mensaje de salida
     """
-    # Ruta para la carga de datos locales
-    df_path = os.path.join(ROOT_DIR, "data/data.csv")
+    try:
+        # Ruta para la carga de datos locales
+        df_path = os.path.join(ROOT_DIR, "data/data.csv")
 
-    # Lanzar el pipeline de entranamiento de nuestro modelo
-    train_model.training_pipeline(df_path)
+        # Lanzar el pipeline de entrenamiento de nuestro modelo
+        train_model.training_pipeline(df_path)
 
-    # Se puede devolver lo que queramos (mensaje de éxito en el entrenamiento, métricas, etc.)
-    return {"TRAINING MODEL": "El proyecto se ha entrenado correctamente"}
+        # Se puede devolver lo que queramos (mensaje de éxito en el entrenamiento, métricas, etc.)
+        return {"TRAINING MODEL": "El proyecto se ha entrenado correctamente"}
+
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 
 # ruta para el lanzar el pipeline de inferencia (Método POST)
@@ -55,17 +59,21 @@ def predict_route():
     Returns:
        dict.  Mensaje de salida (predicción)
     """
+    try:
+        # Obtener los datos pasados por el request
+        data = request.get_json()
 
-    # Obtener los datos pasados por el request
-    data = request.get_json()
+        # Lanzar la ejecución del pipeline de inferencia
+        y_pred = predict_pipeline(data)
 
-    # Lanzar la ejecución del pipeline de inferencia
-    y_pred = predict_pipeline(data)
+        return {"Predicted value": y_pred}
 
-    return {"Predicted value": y_pred}
+    except Exception as e:
+        return {"error en el servicio predict": str(e)}, 500
 
 
 # main
 if __name__ == "__main__":
     # ejecución de la app
     app.run(host="0.0.0.0", port=port, debug=True)
+
